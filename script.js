@@ -43,6 +43,12 @@ let finalTimmeDisplay = '0.0';
 // Scroll
 let ScrollY = 0;
 
+// ALL helper Function
+// -------------------------------------------------
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
 //------------------------------------------
 function updateBestScores() {
   bestScoreArray.forEach((score, index) => {
@@ -81,7 +87,11 @@ function getSavedBestScore() {
   }
   bestScoreToDOM();
 }
-
+// -----------------------------------------------------
+function switchSplashPaage() {
+  scorePage.hidden = true;
+  splashPage.hidden = false;
+}
 //---------------------------------------------------------
 function playAgain() {
   timePlayed = 0;
@@ -94,8 +104,7 @@ function playAgain() {
   playerGuessArray = [];
   equationsArray = [];
   gamePage.addEventListener('click', startTimer);
-  scorePage.hidden = true;
-  splashPage.hidden = false;
+  switchSplashPaage();
 }
 //---------------------------------------------------------
 function switchScorPage() {
@@ -107,11 +116,10 @@ function scoreDOMupdate() {
   finalTimmeDisplay = finalTime.toFixed(1);
   baseTime = timePlayed.toFixed(1);
   penaltyTime = penaltyTime.toFixed(1);
-  baseTimeEl.textContent = `Base Time: ${baseTime} s`;
-  penaltyTimeEl.textContent = `Penalty: +${penaltyTime} s`;
-  finalTimeEl.textContent = `${finalTimmeDisplay} s`;
+  baseTimeEl.textContent = `Base Time: ${baseTime}s`;
+  penaltyTimeEl.textContent = `Penalty: +${penaltyTime}s`;
+  finalTimeEl.textContent = `${finalTimmeDisplay}s`;
   updateBestScores();
-
   itemContainer.scrollTo({ top: 0, behavior: 'instant' });
   switchScorPage();
 }
@@ -119,7 +127,6 @@ function scoreDOMupdate() {
 // -------------------------------------------------------------------
 function checkTimeUp() {
   if (playerGuessArray.length == questionAmount) {
-    console.log('playerguessArray:', playerGuessArray);
     clearInterval(timer);
     equationsArray.forEach((equations, index) => {
       if (equations.evaluated == playerGuessArray[index]) {
@@ -131,7 +138,6 @@ function checkTimeUp() {
     });
 
     scoreDOMupdate();
-    console.log('PenaltyTime', penaltyTime);
   }
 }
 
@@ -161,39 +167,12 @@ function select(playerGuess) {
 }
 
 // -------------------------------------------------
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
-
-//------------------------------------------------------
-function populateGamePage() {
-  // Reset DOM, Set Blank Space Above
-  itemContainer.textContent = '';
-  // Spacer
-  const topSpacer = document.createElement('div');
-  topSpacer.classList.add('height-240');
-  // Selected Item
-  const selectedItem = document.createElement('div');
-  selectedItem.classList.add('selected-item');
-  // Append
-  itemContainer.append(topSpacer, selectedItem);
-
-  // Create Equations, Build Elements in DOM
-  createEquations();
-  equationToDOM();
-  // Set Blank Space Below
-  const bottomSpacer = document.createElement('div');
-  bottomSpacer.classList.add('height-500');
-  itemContainer.appendChild(bottomSpacer);
-}
-
-// -------------------------------------------------
-function updateGamepageDOM() {
+function switchGamePage() {
   countdownPage.hidden = true;
   gamePage.hidden = false;
 }
 
-// -------------------------------------------------
+//-------------------------------------------------
 
 function equationToDOM() {
   equationsArray.forEach(equation => {
@@ -206,7 +185,7 @@ function equationToDOM() {
     item.appendChild(equationText);
     itemContainer.appendChild(item);
   });
-  updateGamepageDOM();
+  switchGamePage();
 }
 
 // -------------------------------------------------
@@ -243,6 +222,27 @@ function createEquations() {
   shuffle(equationsArray);
 }
 
+//------------------------------------------------------
+function populateGamePage() {
+  // Reset DOM, Set Blank Space Above
+  itemContainer.textContent = '';
+  // Spacer
+  const topSpacer = document.createElement('div');
+  topSpacer.classList.add('height-240');
+  // Selected Item
+  const selectedItem = document.createElement('div');
+  selectedItem.classList.add('selected-item');
+  // Append
+  itemContainer.append(topSpacer, selectedItem);
+  // Create Equations, Build Elements in DOM
+  createEquations();
+  equationToDOM();
+  // Set Blank Space Below
+  const bottomSpacer = document.createElement('div');
+  bottomSpacer.classList.add('height-500');
+  itemContainer.appendChild(bottomSpacer);
+}
+
 // -------------------------------------------------
 function updateCountdownDOM() {
   countdown.textContent = `${countdownTime}`;
@@ -257,7 +257,7 @@ function updateCountdownDOM() {
 
 // -------------------------------------------------
 function showCountdown() {
-  if (questionAmount > 0) {
+  if (questionAmount) {
     splashPage.hidden = true;
     countdownPage.hidden = false;
     countdown.textContent = `Ready!`;
